@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="es">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | MisionK9OIRSA</title>
+    <title>Misión K9 OIRSA | Guardianes de la Sanidad</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="TemplateData/style.css?v=14">
   
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -16,7 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest"/>
 
 <style>
-/* P13 — Mision K9: pantalla web adaptativa y control tactil */
+/* P14 — Mision K9: pagina a pantalla disponible, sin pie de Unity */
 html, body { margin:0!important; padding:0!important; width:100%; height:100%;
   overflow:hidden!important; overscroll-behavior:none; background:#00192e; }
 html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
@@ -29,7 +29,7 @@ html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
   display:block!important; width:100%!important; height:100%!important;
   position:absolute!important; inset:0!important; background:#00192e;
   touch-action:none!important; outline:none; }
-#unity-footer {display:none!important;}
+#unity-footer {display:none!important;} /* El HTML original del pie tambien se elimina. */
 #unity-loading-bar {z-index:1000;}
 #k9-fullscreen {
   position:fixed; right:max(10px,env(safe-area-inset-right));
@@ -72,10 +72,6 @@ html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">MisionK9OIRSA</div>
       </div>
     </div>
     <script>
@@ -146,10 +142,7 @@ html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
         config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
         // Mobile device style: fill the whole browser client area with the game canvas:
 
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+        
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
 
@@ -160,8 +153,8 @@ html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
 
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
       }
 
       document.querySelector("#unity-loading-bar").style.display = "block";
@@ -173,9 +166,7 @@ html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
               }).then((unityInstance) => {
                 document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
+                window.k9UnityInstance = unityInstance;
 
               }).catch((message) => {
                 alert(message);
