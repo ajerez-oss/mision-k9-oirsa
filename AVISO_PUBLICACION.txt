@@ -1,0 +1,1 @@
+Mision K9 OIRSA - Build WebGL. Subir el contenido de ESTA carpeta a la raiz del repositorio de GitHub Pages. El ranking actual es LOCAL por navegador, no un marcador global entre dispositivos.
