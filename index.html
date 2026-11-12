@@ -6,8 +6,63 @@
     <title>Unity Web Player | MisionK9OIRSA</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
+  
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Mision K9"/>
+<meta name="theme-color" content="#00192e"/>
+<link rel="apple-touch-icon" href="k9-icon-192.png"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+
+<style>
+/* P13 — Mision K9: pantalla web adaptativa y control tactil */
+html, body { margin:0!important; padding:0!important; width:100%; height:100%;
+  overflow:hidden!important; overscroll-behavior:none; background:#00192e; }
+html {touch-action:none;} body {-webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none;}
+#unity-container, #unity-container.unity-mobile, #unity-container.unity-desktop {
+  position:fixed!important; inset:0!important; left:0!important; top:0!important;
+  width:100vw!important; height:100vh!important; height:100dvh!important;
+  transform:none!important; margin:0!important; padding:0!important; }
+#unity-canvas, #unity-canvas.unity-mobile {
+  display:block!important; width:100%!important; height:100%!important;
+  position:absolute!important; inset:0!important; background:#00192e;
+  touch-action:none!important; outline:none; }
+#unity-footer {display:none!important;}
+#unity-loading-bar {z-index:1000;}
+#k9-fullscreen {
+  position:fixed; right:max(10px,env(safe-area-inset-right));
+  bottom:max(8px,env(safe-area-inset-bottom));
+  z-index:10020; width:46px;height:46px; border:1px solid #20d8f9;
+  border-radius:12px; background:rgba(0,25,54,.85); color:#fff;
+  font-size:23px; cursor:pointer; touch-action:manipulation;}
+#k9-guide {
+  display:none;position:fixed;z-index:10030; left:50%; top:50%;
+  transform:translate(-50%,-50%); box-sizing:border-box;
+  width:min(92vw,440px); padding:20px; border:2px solid #20d8f9;
+  border-radius:16px; background:rgba(0,25,54,.98);color:white;
+  text-align:center;font:600 17px/1.45 system-ui,sans-serif;
+  box-shadow:0 8px 32px rgba(0,0,0,.55);}
+#k9-guide button {margin-top:12px;border:0;border-radius:10px;
+  padding:10px 18px;background:#1cd0b8;color:#032036;font:700 16px system-ui;}
+#k9-rotate {display:none; position:fixed; inset:0; z-index:10040;
+  background:#041e3a;color:white;align-items:center;justify-content:center;
+  font:700 24px/1.4 system-ui,sans-serif;text-align:center;padding:25px;}
+@media (orientation: portrait) and (pointer:coarse){#k9-rotate{display:flex;}}
+@media (display-mode:standalone){#k9-fullscreen{display:none;}}
+</style>
+</head>
   <body>
+<!-- MISION_K9_P13_MOBILE -->
+<button id="k9-fullscreen" type="button" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+<div id="k9-guide" role="dialog" aria-live="polite">
+  En Safari de iPhone, abrí <b>Compartir</b> → <b>Añadir a pantalla de inicio</b> →
+  activá <b>Abrir como app web</b>. Luego abrí Misión K9 desde su icono.
+  <div><button id="k9-guide-close" type="button">ENTENDIDO</button></div>
+</div>
+<div id="k9-rotate">↻<br/>Gir&aacute el teléfono horizontalmente para jugar Misión K9</div>
+
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -88,11 +143,12 @@
       // expected to change.
 
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
         // Mobile device style: fill the whole browser client area with the game canvas:
 
         var meta = document.createElement('meta');
         meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        meta.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no';
         document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
@@ -129,5 +185,38 @@
       document.body.appendChild(script);
 
     </script>
-  </body>
+  
+<script>
+(function(){
+  'use strict';
+  var btn=document.getElementById('k9-fullscreen');
+  var guide=document.getElementById('k9-guide');
+  var close=document.getElementById('k9-guide-close');
+  close.onclick=function(){guide.style.display='none';};
+  btn.onclick=function(){
+    if(document.fullscreenElement){
+      if(document.exitFullscreen) document.exitFullscreen();
+      return;
+    }
+    var target=document.getElementById('unity-container');
+    var request=target.requestFullscreen || target.webkitRequestFullscreen;
+    if(request){
+      try { var r=request.call(target); if(r && typeof r.catch==='function')
+        r.catch(function(){guide.style.display='block';}); }
+      catch(e){guide.style.display='block';}
+    } else {guide.style.display='block';}
+  };
+  document.addEventListener('fullscreenchange',function(){
+    btn.textContent=document.fullscreenElement?'↙':'⛶';
+  });
+  var canvas=document.getElementById('unity-canvas');
+  if(canvas){
+    // Evita que un arrastre del joystick desplace la pagina de Safari.
+    canvas.addEventListener('touchmove',function(e){if(e.cancelable)e.preventDefault();},{passive:false});
+    canvas.addEventListener('gesturestart',function(e){if(e.cancelable)e.preventDefault();},{passive:false});
+  }
+})();
+</script>
+
+</body>
 </html>
